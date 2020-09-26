@@ -1,0 +1,33 @@
+{
+    "Comment": "Discord Webhook Posting Process",
+    "StartAt": "Check Webhook",
+    "States": {
+        "Check Webhook": {
+            "Type": "Task",
+            "Resource": "${DiscordCheckWebhookFunctionArn}",
+            "ResultPath": "$.webhookisvalid",
+            "Next": "Valid Webhook?"
+        },
+        "Valid Webhook?": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.webhookisvalid",
+                    "BooleanEquals": true,
+                    "Next": "Post Message"
+                }
+            ],
+            "Default": "Webhook Invalid!"
+        },
+        "Post Message": {
+            "Type": "Task",
+            "Resource": "${DiscordPostMessageFunctionArn}",
+            "ResultPath": "$.postresult",
+            "End": true
+        },
+        "Webhook Invalid!": {
+            "Type": "Pass",
+            "End": true
+        }
+    }
+}

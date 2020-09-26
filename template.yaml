@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  discord-webhook
+
+  Simple collection of functions to generate a message via a Discord Webhook
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  DiscordWebhookStateMachine:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionUri: statemachines/discord-webhook.asl.json
+      DefinitionSubstitutions:
+        DiscordCheckWebhookFunctionArn: !GetAtt DiscordCheckWebhookFunction.Arn
+        DiscordPostMessageFunctionArn: !GetAtt DiscordPostMessageFunction.Arn
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - LambdaInvokePolicy:
+            FunctionName: !Ref DiscordCheckWebhookFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref DiscordPostMessageFunction
+
+  DiscordCheckWebhookFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/discord/check-webhook/
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+
+  DiscordPostMessageFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/discord/post-message/
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+
+Outputs:
+  DiscordWebhookStateMachineArn:
+    Description: "Discord Webhook State Machine ARN"
+    Value: !Ref DiscordWebhookStateMachine
+  DiscordWebhookStateMachineRole:
+    Description: "Implicit IAM Role created for Discord Webhook State Machine"
+    Value: !GetAtt DiscordWebhookStateMachineRole.Arn

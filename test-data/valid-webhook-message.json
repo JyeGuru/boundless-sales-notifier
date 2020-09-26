@@ -1,0 +1,21 @@
+{
+  "webhook": "",
+  "message": {
+    "username": "AWS Step Function Test Routine",
+    "avatar_url": "https://i.imgur.com/vAGwxKN.jpg",
+    "content": "This is a test message!",
+    "embeds": [
+      {
+        "title": "Test Message from AWS Step Functions",
+        "url": "https://google.com.au/",
+        "description": "This is a test message. If this message is being correctly displayed, then the step function has worked.\nHappy days!",
+        "color": 16750848,
+
+        "footer": {
+          "text": "Grumpy Leopard Services",
+          "icon_url": "https://i.imgur.com/DIuP4RV.jpg"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "check-webhook",
+  "version": "1.0.0",
+  "description": "check validity of Discord webhooks",
+  "main": "app.js",
+  "author": "Jye Karl-Perry",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
