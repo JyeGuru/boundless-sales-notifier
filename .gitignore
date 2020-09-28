@@ -1,8 +1,9 @@
 # Node modules
 node_modules/
 
-# AWS SAM Build Folder
+# AWS SAM Stuff
 .aws-sam/
+samconfig.toml
 
 # Created by https://www.gitignore.io/api/osx,node,linux,windows
 
