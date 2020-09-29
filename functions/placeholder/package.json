@@ -1,0 +1,8 @@
+{
+  "name": "simple-placeholder-function",
+  "version": "1.0.0",
+  "description": "returns its input - used as a placeholder",
+  "main": "app.js",
+  "author": "Jye Karl-Perry",
+  "license": "MIT"
+}

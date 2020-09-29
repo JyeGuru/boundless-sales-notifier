@@ -23,6 +23,41 @@ Resources:
             FunctionName: !Ref DiscordCheckWebhookFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref DiscordPostMessageFunction
+  ButtBeaconScannerStateMachine:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionUri: statemachines/butt-beacon-scanner.asl.json
+      DefinitionSubstitutions:
+        ButtRetrieveStockFromAPIFunctionArn: !GetAtt ButtRetrieveStockFromAPIFunction.Arn
+        CompareStockWithLastRunFunctionArn: !GetAtt CompareStockWithLastRunFunction.Arn
+        PLACEHOLDERFUNCTION: !GetAtt PlaceholderFunction.Arn
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ButtRetrieveStockFromAPIFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CompareStockWithLastRunFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref PlaceholderFunction
+
+  ButtRetrieveStockFromAPIFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/butt/retrieve-stock/
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+
+  CompareStockWithLastRunFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/butt/compare-stock/
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          tablename: !Ref ShopStockTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ShopStockTable
 
   DiscordCheckWebhookFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -38,10 +73,34 @@ Resources:
       Handler: app.lambdaHandler
       Runtime: nodejs12.x
 
+  PlaceholderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/placeholder/
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+
+  ShopStockTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "beacon"
+          AttributeType: "S"
+        - AttributeName: "item_id"
+          AttributeType: "N"
+      KeySchema:
+        - AttributeName: "beacon"
+          KeyType: "HASH"
+        - AttributeName: "item_id"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        WriteCapacityUnits: 1
+        ReadCapacityUnits: 1
+
 Outputs:
-  DiscordWebhookStateMachineArn:
+  ButtBeaconScannerStateMachineArn:
     Description: "Discord Webhook State Machine ARN"
-    Value: !Ref DiscordWebhookStateMachine
-  DiscordWebhookStateMachineRole:
+    Value: !Ref ButtBeaconScannerStateMachine
+  ButtBeaconScannerStateMachineRole:
     Description: "Implicit IAM Role created for Discord Webhook State Machine"
-    Value: !GetAtt DiscordWebhookStateMachineRole.Arn
+    Value: !GetAtt ButtBeaconScannerStateMachineRole.Arn

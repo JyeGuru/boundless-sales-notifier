@@ -1,0 +1,11 @@
+{
+  "name": "retrieve-stock",
+  "version": "1.0.0",
+  "description": "retrieves stock from butt api",
+  "main": "app.js",
+  "author": "Jye Karl-Perry",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}

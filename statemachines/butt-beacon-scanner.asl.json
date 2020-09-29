@@ -1,0 +1,61 @@
+{
+    "Comment": "Butt Beacon Scanning Process",
+    "StartAt": "Retrieve BUTT Data From API",
+    "States": {
+        "Retrieve BUTT Data From API": {
+            "Type": "Task",
+            "Resource": "${ButtRetrieveStockFromAPIFunctionArn}",
+            "Next": "Compare With DB"
+        },
+        "Compare With DB": {
+            "Type": "Task",
+            "Resource": "${CompareStockWithLastRunFunctionArn}",
+            "Next": "Process Data"
+        },
+        "Process Data": {
+            "Type": "Parallel",
+            "Branches": [
+                {
+                    "StartAt": "Compare Data",
+                    "States": {
+                        "Compare Data": {
+                            "Type": "Task",
+                            "Resource": "${PLACEHOLDERFUNCTION}",
+                            "Next": "Is There Anything New?"
+                        },
+                        "Is There Anything New?": {
+                            "Type": "Choice",
+                            "Choices": [
+                                {
+                                    "Variable": "$.update_required",
+                                    "BooleanEquals": true,
+                                    "Next": "Push Notification To Discord"
+                                }
+                            ],
+                            "Default": "Nothing To Do"
+                        },
+                        "Push Notification To Discord": {
+                            "Type": "Task",
+                            "Resource": "${PLACEHOLDERFUNCTION}",
+                            "End": true
+                        },
+                        "Nothing To Do": {
+                            "Type": "Succeed"
+                        }
+                    }
+                },
+                {
+                    "StartAt": "Update DB",
+                    "States": {
+                        "Update DB": {
+                            "Type": "Task",
+                            "Resource": "${PLACEHOLDERFUNCTION}",
+                            "End": true
+                        }
+                    }
+                }
+            ],
+            "End": true
+        }
+    }
+}

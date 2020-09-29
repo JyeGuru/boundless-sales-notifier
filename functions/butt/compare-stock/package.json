@@ -1,0 +1,8 @@
+{
+  "name": "compare-stock",
+  "version": "1.0.0",
+  "description": "compares the new api data with previous runs",
+  "main": "app.js",
+  "author": "Jye Karl-Perry",
+  "license": "MIT"
+}
